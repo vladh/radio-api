@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
-	"github.com/davecgh/go-spew/spew"
+	// "github.com/davecgh/go-spew/spew"
 	"github.com/dhowden/tag"
 	"github.com/julienschmidt/httprouter"
 )
@@ -137,6 +137,22 @@ func handleNp(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 }
 
 
+func handleNpSet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	var err error
+	var song Song
+
+	config := getConfig()
+	station := getStation(config, ps.ByName("stationId"))
+
+	decoder := json.NewDecoder(r.Body)
+	err = decoder.Decode(&song)
+	if err != nil { log.Printf("ERROR: %s\n", err) }
+	log.Printf("%+v\n", song)
+
+	gState.Playing[station.Id] = song
+}
+
+
 func handleRandom(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var err error
 
@@ -162,9 +178,6 @@ func handleRandom(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 	song, err := getSong(chosenPath)
 	if err != nil { log.Printf("ERROR: %s\n", err) }
 
-	spew.Dump(song)
-	gState.Playing[station.Id] = song
-
 	err = json.NewEncoder(w).Encode(song)
 	if err != nil { log.Printf("ERROR: %s\n", err) }
 }
@@ -177,8 +190,9 @@ func main() {
 	gState.Playing = make(map[string]Song)
 
 	router := httprouter.New()
-	router.GET("/api/:stationId/random", handleRandom)
 	router.GET("/api/:stationId/np", handleNp)
+	router.POST("/api/:stationId/np", handleNpSet)
+	router.GET("/api/:stationId/random", handleRandom)
 
 	log.Printf("Listening on port 8100\n")
 	log.Fatal(http.ListenAndServe(":8100", router))
