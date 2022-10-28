@@ -1,3 +1,6 @@
+// © 2022 Vlad-Stefan Harbuz <vlad@vladh.net>
+// SPDX-License-Identifier: GPL-3.0-only
+
 module git.sr.ht/~vladh/radio-api
 
 go 1.19
