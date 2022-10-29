@@ -44,7 +44,7 @@ type Config struct {
 }
 
 type ErrResponse struct {
-	Err string
+	Err string `json:"err"`
 }
 
 type RandomResponse = Song
