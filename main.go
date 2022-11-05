@@ -61,7 +61,16 @@ func isSong(path string) bool {
 
 func getConfig() Config {
 	var config Config
-	_, err := toml.DecodeFile("config.toml", &config)
+
+	configDir := os.Getenv("XDG_CONFIG_HOME")
+	if len(configDir) == 0 {
+		homedir, err := os.UserHomeDir()
+		if err != nil { panic(err) }
+		configDir = homedir + "/.config/"
+	}
+	configPath := configDir + "/radio-api/config.toml"
+
+	_, err := toml.DecodeFile(configPath, &config)
 	if err != nil { log.Fatal(err) }
 	return config
 }
