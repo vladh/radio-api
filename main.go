@@ -5,6 +5,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -177,7 +178,9 @@ func handleRandom(w http.ResponseWriter, r *http.Request, ps httprouter.Params) 
 
 	songPaths, err := getSongsInDirs(station.Paths)
 	if err != nil {
-		resData := ErrResponse{Err: "Could not get songs for station"}
+		resData := ErrResponse{
+			Err: fmt.Sprintf("Could not get songs for station: %s", err),
+		}
 		err = json.NewEncoder(w).Encode(resData)
 		if err != nil { log.Printf("ERROR: %s\n", err) }
 		return
